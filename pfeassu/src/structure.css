@@ -1,0 +1,135 @@
+/* structure.css - Style général pour application React/Laravel */
+
+body {
+  background: #f8fafc;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  color: #222;
+}
+
+.auth-container, .main-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  padding: 32px 28px;
+}
+
+h1, h2, h3 {
+  color: #2d3748;
+  margin-top: 0;
+}
+
+nav {
+  background: #e0e7ff;
+  border-radius: 8px;
+  padding: 12px 0;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+
+nav button {
+  background: #fff;
+  border: 1px solid #a5b4fc;
+  border-radius: 5px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+nav button:hover, nav button:focus {
+  background: #6366f1;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+thead {
+  background: #f1f5f9;
+}
+th, td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+th {
+  color: #374151;
+  font-weight: 600;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+
+input, select, textarea {
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  width: 100%;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px #a5b4fc44;
+}
+
+button, .btn {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-right: 8px;
+}
+button:hover, .btn:hover {
+  background: #4f46e5;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 800px) {
+  .auth-container, .main-container {
+    max-width: 98vw;
+    padding: 18px 6px;
+  }
+  nav {
+    flex-direction: column;
+    gap: 8px;
+  }
+  table, thead, tbody, th, td, tr {
+    display: block;
+    width: 100%;
+  }
+  th, td {
+    padding: 10px 6px;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #a5b4fc;
+  border-radius: 4px;
+}

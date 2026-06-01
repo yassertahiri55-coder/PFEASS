@@ -1,0 +1,10 @@
+/*
+|--------------------------------------------------------------------------
+| Application CSS
+|--------------------------------------------------------------------------
+| Ajoutez ici vos styles personnalisés ou importez Tailwind si besoin.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

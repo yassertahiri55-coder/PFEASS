@@ -1,0 +1,132 @@
+/* Navbar */
+.navbar {
+  background: #222;
+  padding: 16px 0;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 8px 18px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.navbar a:hover, .navbar a.active {
+  background: #61dafb;
+  color: #222;
+}
+
+/* Formulaires Login/Register */
+.auth-container {
+  max-width: 370px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0001;
+  padding: 32px 28px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.auth-container h2 {
+  margin-bottom: 18px;
+  color: #222;
+}
+.auth-container form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.auth-container input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+.auth-container input:focus {
+  border: 1.5px solid #61dafb;
+  outline: none;
+}
+.auth-container button {
+  background: #61dafb;
+  color: #222;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.auth-container button:hover {
+  background: #1fa7e6;
+  color: #fff;
+}
+.auth-container p {
+  margin: 0;
+  font-size: 0.98rem;
+}
+.auth-container p[style*='red'] {
+  color: #e53935 !important;
+  margin-top: 8px;
+}
+.auth-container p[style*='green'] {
+  color: #43a047 !important;
+  margin-top: 8px;
+}
+
+@media (max-width: 500px) {
+  .auth-container {
+    padding: 18px 6vw 16px 6vw;
+  }
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 0;
+  }
+}
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
