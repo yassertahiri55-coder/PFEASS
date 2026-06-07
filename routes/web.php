@@ -23,7 +23,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/expert/dashboard', function () {
         return view('expert_dashboard');
     });
-    Route::post('/rendezvous', [RendezVousController::class, 'store'])->name('rendezvous.store');
+    Route::post('/rendezvous', [RendezVousController::class, 'store'])->name('web.rendezvous.store');
     Route::post('/admin/sinistres/{id}/statut', [AdminController::class, 'updateSinistreStatus'])->name('admin.sinistre.updateStatus');
     Route::post('/admin/notifications/send', [AdminController::class, 'sendNotification'])->name('admin.notifications.send');
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
