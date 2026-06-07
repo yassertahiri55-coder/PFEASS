@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
         'telephone',
         'pays',
         'date_naissance',
@@ -46,10 +47,9 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'date_naissance' => 'date',
         'password' => 'hashed',
     ];
-
-
 
     public function sinistres()
     {

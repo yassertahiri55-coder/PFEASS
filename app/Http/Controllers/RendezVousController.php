@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-
-use Illuminate\Http\Request;
-use App\Models\RendezVous;
 use App\Models\Dossier;
+use App\Models\RendezVous;
 use App\Models\Sinistre;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class RendezVousController extends Controller
 {
@@ -16,10 +16,15 @@ class RendezVousController extends Controller
      */
     public function index()
     {
-        // Affiche tous les rendez-vous liés aux dossiers de l'utilisateur connecté
-        $sinistres = Sinistre::all()->where('user_id', Auth::id());
-        $dossiers = Dossier::all()->whereIn('sinistre_id', $sinistres->pluck('id')->all());
-        $rendezVous = RendezVous::all()->whereIn('dossier_id', $dossiers->pluck('id')->all());
+        $user = Auth::user();
+        if (in_array($user->role, ['agent', 'expert', 'admin'], true)) {
+            return response()->json(RendezVous::all());
+        }
+
+        $sinistres = Sinistre::where('client_id', Auth::id())->get();
+        $dossiers = Dossier::whereIn('sinistre_id', $sinistres->pluck('id')->all())->get();
+        $rendezVous = RendezVous::whereIn('dossier_id', $dossiers->pluck('id')->all())->get();
+
         return response()->json($rendezVous->values());
     }
 
@@ -36,6 +41,19 @@ class RendezVousController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        Log::info('RendezVousController@store called', [
+            'user_id' => $user?->id,
+            'role' => $user?->role,
+            'dossier_id' => $request->input('dossier_id'),
+            'input' => $request->only(['date', 'lieu', 'description', 'statut', 'dossier_id']),
+            'headers' => [
+                'authorization' => $request->header('authorization'),
+                'x-csrf-token' => $request->header('x-csrf-token'),
+                'cookie' => $request->header('cookie'),
+            ],
+        ]);
+
         $validated = $request->validate([
             'date' => 'required|date',
             'lieu' => 'required|string|max:255',
@@ -43,13 +61,41 @@ class RendezVousController extends Controller
             'statut' => 'required|in:planifie,effectue,annule',
             'dossier_id' => 'required|exists:dossiers,id',
         ]);
-        // Vérifier que le dossier appartient à l'utilisateur
+
+        // Vérifier que le dossier appartient bien à l'utilisateur ou qu'il est agent/expert/admin
         $dossier = Dossier::findOrFail($validated['dossier_id']);
-        if ($dossier->sinistre->user_id !== Auth::id()) {
+
+        if (! in_array($user->role, ['agent', 'expert', 'admin'], true) && $dossier->sinistre->client_id !== $user->id) {
+            Log::warning('RendezVousController@store unauthorized', [
+                'user_id' => $user?->id,
+                'role' => $user?->role,
+                'dossier_id' => $dossier->id,
+                'sinistre_client_id' => $dossier->sinistre->client_id,
+            ]);
             abort(403, 'Accès refusé');
         }
-        $rendezVous = RendezVous::create($validated);
-        return response()->json($rendezVous, 201);
+
+        try {
+            $rendezVous = RendezVous::create($validated);
+            Log::info('RendezVousController@store created', [
+                'rendezvous_id' => $rendezVous->id,
+                'dossier_id' => $dossier->id,
+                'user_id' => $user?->id,
+                'role' => $user?->role,
+            ]);
+
+            return response()->json($rendezVous, 201);
+        } catch (\Throwable $exception) {
+            Log::error('RendezVousController@store failed', [
+                'message' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
+                'user_id' => $user?->id,
+                'role' => $user?->role,
+                'dossier_id' => $validated['dossier_id'],
+            ]);
+
+            throw $exception;
+        }
     }
 
     /**
@@ -58,9 +104,11 @@ class RendezVousController extends Controller
     public function show(string $id)
     {
         $rendezVous = RendezVous::findOrFail($id);
-        if ($rendezVous->dossier->sinistre->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if (! in_array($user->role, ['agent', 'expert', 'admin'], true) && $rendezVous->dossier->sinistre->client_id !== $user->id) {
             abort(403, 'Accès refusé');
         }
+
         return response()->json($rendezVous);
     }
 
@@ -78,7 +126,8 @@ class RendezVousController extends Controller
     public function update(Request $request, string $id)
     {
         $rendezVous = RendezVous::findOrFail($id);
-        if ($rendezVous->dossier->sinistre->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if (! in_array($user->role, ['agent', 'expert', 'admin'], true) && $rendezVous->dossier->sinistre->client_id !== $user->id) {
             abort(403, 'Accès refusé');
         }
         $validated = $request->validate([
@@ -88,6 +137,7 @@ class RendezVousController extends Controller
             'statut' => 'sometimes|required|in:planifie,effectue,annule',
         ]);
         $rendezVous->update($validated);
+
         return response()->json($rendezVous);
     }
 
@@ -97,10 +147,12 @@ class RendezVousController extends Controller
     public function destroy(string $id)
     {
         $rendezVous = RendezVous::findOrFail($id);
-        if ($rendezVous->dossier->sinistre->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if (! in_array($user->role, ['agent', 'expert', 'admin'], true) && $rendezVous->dossier->sinistre->client_id !== $user->id) {
             abort(403, 'Accès refusé');
         }
         $rendezVous->delete();
+
         return response()->json(['message' => 'Rendez-vous supprimé']);
     }
 }

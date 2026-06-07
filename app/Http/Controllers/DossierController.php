@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Models\Dossier;
+use App\Models\Notification;
 use App\Models\Sinistre;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class DossierController extends Controller
@@ -36,7 +37,7 @@ class DossierController extends Controller
             'sinistre_id' => 'required|exists:sinistres,id',
         ]);
         // Générer un numéro unique (ex: DS-YYYYMMDD-HHMMSS-rand)
-        $numero = 'DS-' . date('Ymd-His') . '-' . rand(1000,9999);
+        $numero = 'DS-'.date('Ymd-His').'-'.rand(1000, 9999);
         $date_ouverture = now()->toDateString();
         $date_cloture = null;
         // Permettre à l'agent de créer un dossier pour n'importe quel sinistre
@@ -48,6 +49,7 @@ class DossierController extends Controller
             'date_cloture' => $date_cloture,
             'sinistre_id' => $validated['sinistre_id'],
         ]);
+
         return response()->json($dossier, 201);
     }
 
@@ -57,10 +59,11 @@ class DossierController extends Controller
     public function show(string $id)
     {
         $dossier = Dossier::findOrFail($id);
-        // Vérifier que le dossier appartient à un sinistre de l'utilisateur
-        if ($dossier->sinistre->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if ($user->role !== 'agent' && $user->role !== 'expert' && $user->role !== 'admin' && $dossier->sinistre->client_id !== $user->id) {
             abort(403, 'Accès refusé');
         }
+
         return response()->json($dossier);
     }
 
@@ -78,16 +81,18 @@ class DossierController extends Controller
     public function update(Request $request, string $id)
     {
         $dossier = Dossier::findOrFail($id);
-        if ($dossier->sinistre->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if ($user->role !== 'agent' && $user->role !== 'expert' && $user->role !== 'admin' && $dossier->sinistre->client_id !== $user->id) {
             abort(403, 'Accès refusé');
         }
         $validated = $request->validate([
-            'numero' => 'sometimes|required|string|unique:dossiers,numero,' . $dossier->id,
+            'numero' => 'sometimes|required|string|unique:dossiers,numero,'.$dossier->id,
             'statut' => 'sometimes|required|in:en_attente,en_cours,termine,refuse',
             'date_ouverture' => 'sometimes|required|date',
             'date_cloture' => 'nullable|date',
         ]);
         $dossier->update($validated);
+
         return response()->json($dossier);
     }
 
@@ -97,19 +102,22 @@ class DossierController extends Controller
     public function destroy(string $id)
     {
         $dossier = Dossier::findOrFail($id);
-        if ($dossier->sinistre->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if ($user->role !== 'agent' && $user->role !== 'expert' && $user->role !== 'admin' && $dossier->sinistre->client_id !== $user->id) {
             abort(403, 'Accès refusé');
         }
         $dossier->delete();
+
         return response()->json(['message' => 'Dossier supprimé']);
     }
-     /**
+
+    /**
      * Valider un dossier (expert uniquement)
      */
     public function valider($id)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'expert') {
+        if (! $user || $user->role !== 'expert') {
             return response()->json(['error' => 'Non autorisé'], 403);
         }
         $dossier = Dossier::findOrFail($id);
@@ -126,7 +134,7 @@ class DossierController extends Controller
         // Créer une notification pour l'agent
         $agentId = $dossier->sinistre->user_id ?? null;
         if ($agentId) {
-            \App\Models\Notification::create([
+            Notification::create([
                 'user_id' => $agentId,
                 'dossier_id' => $dossier->id,
                 'type' => 'validation',
@@ -144,7 +152,7 @@ class DossierController extends Controller
     public function refuser($id)
     {
         $user = Auth::user();
-        if (!$user || $user->role !== 'expert') {
+        if (! $user || $user->role !== 'expert') {
             return response()->json(['error' => 'Non autorisé'], 403);
         }
         $dossier = Dossier::findOrFail($id);
@@ -161,7 +169,7 @@ class DossierController extends Controller
         // Créer une notification pour l'agent
         $agentId = $dossier->sinistre->user_id ?? null;
         if ($agentId) {
-            \App\Models\Notification::create([
+            Notification::create([
                 'user_id' => $agentId,
                 'dossier_id' => $dossier->id,
                 'type' => 'refus',

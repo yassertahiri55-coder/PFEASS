@@ -20,7 +20,6 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
-
     /**
      * Where to redirect users after login.
      *
@@ -29,12 +28,13 @@ class LoginController extends Controller
     protected function redirectTo()
     {
         $user = auth()->user();
-        if ($user->role_id == 4) {
+        if ($user->role === 'admin') {
             return '/admin/dashboard';
         }
-        if ($user->role_id == 3) {
+        if ($user->role === 'expert') {
             return '/expert/dashboard';
         }
+
         return '/home';
     }
 

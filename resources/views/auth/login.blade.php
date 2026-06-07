@@ -1,10 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    body { background: linear-gradient(120deg, #f8fafc 0%, #e6eefd 100%) !important; font-family: 'Segoe UI', 'Roboto', Arial, sans-serif; }
-</style>
-<div class="container d-flex align-items-center justify-content-center min-vh-100">
+<div class="container d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 150px);">
     <div class="col-md-5">
         <div class="card shadow-lg border-0 rounded-4">
             <div class="card-header bg-primary bg-gradient text-white rounded-top-4 text-center" style="min-height:60px;">
