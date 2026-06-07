@@ -7,6 +7,10 @@ set -e
 
 echo "🚀 Début du déploiement..."
 
+# 0. Nettoyage des fichiers de cache locaux s'ils ont été téléversés par FTP/SFTP
+echo "🧹 Nettoyage des caches résiduels..."
+rm -f bootstrap/cache/config.php bootstrap/cache/routes.php bootstrap/cache/routes-v7.php bootstrap/cache/services.php bootstrap/cache/packages.php
+
 # 1. Récupérer les dernières modifications du code si Git est utilisé
 if [ -d ".git" ]; then
     echo "📥 Mise à jour du code depuis Git..."
