@@ -2,7 +2,17 @@
 
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 
+  (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_BASE_URL) ||
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL) ||
+  'http://localhost:8000/api';
+
+const axiosInstance = axios.create({
+  baseURL: API_BASE,
+  headers: {
+    Accept: 'application/json',
+  },
+});
 
 function getAuthHeaders() {
   const token = localStorage.getItem('token');
@@ -10,7 +20,7 @@ function getAuthHeaders() {
 }
 
 export async function getDossiers() {
-  const res = await axios.get(`${API_BASE}/dossiers`, { headers: getAuthHeaders() });
+  const res = await axiosInstance.get('/dossiers', { headers: getAuthHeaders() });
   return res.data;
 }
 
@@ -36,6 +46,11 @@ export async function getSinistres() {
 
 export async function createSinistre(data) {
   const res = await axios.post(`${API_BASE}/sinistres`, data, { headers: getAuthHeaders() });
+  return res.data;
+}
+
+export async function getRendezVous() {
+  const res = await axios.get(`${API_BASE}/rendezvous`, { headers: getAuthHeaders() });
   return res.data;
 }
 

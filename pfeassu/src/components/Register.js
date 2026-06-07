@@ -33,15 +33,23 @@ export default function Register() {
           email,
           password,
           password_confirmation: passwordConfirm,
-          telephone,
-          pays,
-          date_naissance: dateNaissance,
+          telephone: telephone || null,
+          pays: pays || null,
+          date_naissance: dateNaissance || null,
           role: role,
+        },
+        {
+          headers: {
+            Accept: 'application/json',
+          },
         }
       );
       setSuccess('Inscription réussie !');
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de l\'inscription');
+      const validationMessage = err.response?.data?.errors
+        ? Object.values(err.response.data.errors).flat().join(' ')
+        : null;
+      setError(validationMessage || err.response?.data?.message || 'Erreur lors de l\'inscription');
     }
   };
 

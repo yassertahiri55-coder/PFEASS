@@ -4,12 +4,10 @@ import axios from 'axios';
 // Téléchargement sécurisé d'un document
 async function downloadDocument(id, nom) {
   const token = localStorage.getItem('token');
+  const headers = token ? { Authorization: `Bearer ${token}`, Accept: 'application/json' } : { Accept: 'application/json' };
   const response = await axios.get(`http://localhost:8000/api/documents/${id}/download`, {
     responseType: 'blob',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
-    }
+    headers
   });
   const url = window.URL.createObjectURL(new Blob([response.data]));
   const link = document.createElement('a');

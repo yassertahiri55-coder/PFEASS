@@ -7,10 +7,18 @@ export default function ListeNotifications() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    axios.get('http://localhost:8000/api/notifications', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => setNotifications(res.data))
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    axios.get('http://localhost:8000/api/notifications', { headers })
+      .then(res => {
+        const filtered = res.data.filter(n => {
+          const senderRole = (n.sender_role || '').toString().toLowerCase();
+          const message = (n.message || '').toString().toLowerCase();
+          return ['expert', 'admin'].includes(senderRole)
+            || message.includes('(expert)')
+            || message.includes('(admin)');
+        });
+        setNotifications(filtered);
+      })
       .catch(() => setNotifications([]))
       .finally(() => setLoading(false));
   }, []);

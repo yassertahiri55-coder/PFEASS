@@ -12,9 +12,8 @@ export default function DetailSinistre() {
 
   const fetchDetails = () => {
     const token = localStorage.getItem('token');
-    axios.get(`http://localhost:8000/api/sinistres/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    axios.get(`http://localhost:8000/api/sinistres/${id}`, { headers })
       .then(res => setDetails(res.data))
       .catch(() => setDetails(null))
       .finally(() => setLoading(false));
@@ -35,8 +34,9 @@ export default function DetailSinistre() {
     setSendMsg(null);
     try {
       const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       await axios.post(`http://localhost:8000/api/sinistres/${id}/envoyer-documents`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers
       });
       setSendMsg('Documents envoyés à l\'expert.');
       setTimeout(() => {

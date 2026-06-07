@@ -11,9 +11,8 @@ export default function ListeSinistres() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    axios.get('http://localhost:8000/api/sinistres', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    axios.get('http://localhost:8000/api/sinistres', { headers })
       .then(res => setSinistres(res.data))
       .catch(() => setSinistres([]))
       .finally(() => setLoading(false));
